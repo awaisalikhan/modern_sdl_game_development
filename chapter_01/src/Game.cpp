@@ -1,85 +1,38 @@
-#include "Game.h"
+#include <SDL/SDL.h>
 
-Game::Game() : m_Window(nullptr), m_is_running(false) {}
+SDL_Window *g_pWindow = 0;
+SDL_Renderer *g_pRenderer = 0;
 
-bool Game::initialize() {
+int main(int argc, char *argv[]) {
 
-  int sdl_result = SDL_Init(SDL_INIT_VIDEO);
+  // Init SDL
 
-  if (sdl_result != 0) {
+  if (SDL_Init(SDL_INIT_EVERYTHING) > 0) {
 
-    SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
-    return false;
-  }
+    // If succeeded create our winwow
 
-  m_Window = SDL_CreateWindow("Chapter 1", 100, 100, 1024, 768, 0);
-
-  if (!m_Window) {
-
-    SDL_Log("Failed to create window: %s", SDL_GetError());
-    SDL_Quit();
-    return false;
-  }
-
-  m_is_running = true;
-  return true;
-}
-
-void Game::run_loop() {
-
-  while (m_is_running) {
-
-    process_input();
-    update_game();
-    generate_output();
-    SDL_Delay(1);
-  }
-}
-
-void Game::process_input() {
-
-  SDL_Event event;
-
-  while (SDL_PollEvent(&event)) {
-
-    switch (event.type) {
-
-    case SDL_QUIT:
-      m_is_running = false;
-      break;
+    g_pWindow = SDL_CreateWindow(
+        "Chatper 1: Setting up SDL", SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED, 800, 600,
+        SDL_WINDOW_SHOWN); // If window not created show an error message
+    if (g_pWindow != 0) {
+      g_pRenderer = SDL_CreateRenderer(g_pWindow, -1, 0);
     }
+
+  } else {
+
+    return -1;
   }
 
-  const Uint8 *state = SDL_GetKeyboardState(nullptr);
+  // Everything succeeded
 
-  if (state[SDL_SCANCODE_ESCAPE]) {
+  SDL_SetRenderDrawColor(g_pRenderer, 0, 0, 0, 255);
 
-    m_is_running = false;
-  }
-}
+  SDL_RenderClear(g_pRenderer);
 
-void Game::update_game() {}
+  SDL_RenderPresent(g_pRenderer);
 
-void Game::generate_output() {}
+  SDL_Delay(15000);
 
-void Game::shut_down() {
-
-  SDL_DestroyWindow(m_Window);
   SDL_Quit();
-}
-
-int main(int, char **) {
-
-  Game game;
-
-  bool success = game.initialize();
-
-  if (success) {
-
-    game.run_loop();
-  }
-
-  game.shut_down();
-
-  return 0;
 }
