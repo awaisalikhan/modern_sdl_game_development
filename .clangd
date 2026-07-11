@@ -1,0 +1,8 @@
+CompileFlags:
+  Compiler: g++
+  Add:
+    - -std=c++17
+
+Diagnostics:
+  Suppress:
+    - builtin_definition

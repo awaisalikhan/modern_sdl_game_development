@@ -1,0 +1,18 @@
+# Build outputs
+*.exe
+*.o
+*.obj
+*.a
+*.lib
+
+# Chapter build folders
+chapter_*/bin/
+chapter_*/src/bin/
+
+# Temporary files
+*.new
+test_write.txt
+
+# Optional editor/system files
+.DS_Store
+Thumbs.db
