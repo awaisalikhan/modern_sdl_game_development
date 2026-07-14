@@ -3,6 +3,14 @@
 SDL_Window *g_pWindow = 0;
 SDL_Renderer *g_pRenderer = 0;
 
+bool is_game_running = false;
+
+extern DECLSPEC SDL_Window *SDLCALL SDL_CreateWindow(const char *title, int x,
+                                                     int y, int w, int h,
+                                                     Uint32 flags);
+bool init )
+
+
 int main(int argc, char *argv[]) {
 
   // Init SDL
