@@ -1,8 +1,14 @@
 #include "Game.h"
 #include <iostream>
 
+Game::Game() : game_running(false), m_Window(nullptr), m_Renderer(nullptr) {}
+
+Game::~Game() = default;
+
 bool Game::init(const char *title, int x_pos, int y_pox, int width, int height,
-                int flags) {
+                bool fullscreen) {
+
+  const Uint32 flags = fullscreen ? SDL_WINDOW_FULLSCREEN : 0;
 
   if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
 
@@ -46,5 +52,41 @@ void Game::render() {
 
   SDL_RenderClear(m_Renderer);
 
-  SDL_Draw
+  SDL_RenderPresent(m_Renderer);
+}
+
+void Game::clean() {
+
+  std::cout << "Clearing game.\n";
+
+  SDL_DestroyRenderer(m_Renderer);
+  SDL_DestroyWindow(m_Window);
+  m_Renderer = nullptr;
+  m_Window = nullptr;
+  game_running = false;
+  SDL_Quit();
+}
+
+void Game::update() {
+  // Game state updates will go here.
+}
+
+bool Game::is_game_running() const { return game_running; }
+
+void Game::handle_events() {
+
+  SDL_Event event;
+
+  if (SDL_PollEvent(&event)) {
+
+    switch (event.type) {
+
+    case SDL_QUIT:
+      game_running = false;
+      break;
+
+    default:
+      break;
+    }
+  }
 }

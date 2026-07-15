@@ -2,11 +2,16 @@
 
 Game *m_game;
 
-int main(int argc, char *argv[]) {
+int main(int, char *[]) {
 
   m_game = new Game();
 
-  m_game->init("Chapter 1", 100, 100, 800, 600, 0);
+  const bool fullscreen = false;
+
+  if (!m_game->init("Chapter 1", 100, 100, 800, 600, fullscreen)) {
+    delete m_game;
+    return 1;
+  }
 
   while (m_game->is_game_running()) {
 
@@ -16,6 +21,7 @@ int main(int argc, char *argv[]) {
   }
 
   m_game->clean();
+  delete m_game;
 
   return 0;
 }
