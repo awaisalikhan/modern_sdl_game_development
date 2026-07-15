@@ -1,33 +1,24 @@
 #pragma once
-
 #include <SDL/SDL.h>
+
 class Game {
+
 public:
   Game();
-  // Initialize the game
+  ~Game();
 
-  bool initialize();
+  bool init(const char *title, int x_pos, int y_pox, int width, int height,
+            int flags);
+  void handle_events();
+  void render();
+  void clean();
+  void update();
 
-  // Runs the game loop until the game is over
-
-  void run_loop();
-
-  // Shutdown the game
-
-  void shut_down();
+  bool is_game_running();
 
 private:
-  // Helper functions for the game loop
-
-  void process_input();
-  void update_game();
-  void generate_output();
-
-  // Window Creation
+  bool game_running;
 
   SDL_Window *m_Window;
-
-  // Game should continue running
-
-  bool m_is_running;
+  SDL_Renderer *m_Renderer;
 };

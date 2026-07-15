@@ -1,91 +1,50 @@
-#include <SDL/SDL.h>
+#include "Game.h"
+#include <iostream>
 
-SDL_Window *g_pWindow = 0;
-SDL_Renderer *g_pRenderer = 0;
-
-bool is_game_running = false;
-
-void init();
-void handle_events();
-void render();
-void clean();
-void update();
-
-bool init(const char *title, int x, int y, int w, int h, int flags) {
-
-  // Init SDL
+bool Game::init(const char *title, int x_pos, int y_pox, int width, int height,
+                int flags) {
 
   if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
 
-    // If succeeded create our winwow
+    std::cout << "SDL init success.\n";
 
-    g_pWindow = SDL_CreateWindow(title, x, y, w, h, flags);
+    m_Window = SDL_CreateWindow(title, x_pos, y_pox, width, height, flags);
 
-    if (g_pWindow) {
+    if (m_Window != 0) {
 
-      g_pRenderer = SDL_CreateRenderer(g_pWindow, -1, 0);
+      std::cout << "Window creation success.\n";
+      m_Renderer = SDL_CreateRenderer(m_Window, -1, 0);
 
-      if (g_pRenderer) {
+      if (m_Renderer != 0) {
 
-        return true;
-      } else {
-
-        SDL_Log("SDL Window creation failed: %s", SDL_GetError());
-        return false;
+        std::cout << "Renderer creation success.\n";
+        SDL_SetRenderDrawColor(m_Renderer, 255, 255, 255, 255);
       }
 
-    } else {
+      else {
 
-      SDL_Log("SDL Window creation failed: %s", SDL_GetError());
+        std::cout << "Render creation failed.\n";
+        return false;
+      }
+    } else {
+      std::cout << "Window creation failed.\n";
       return false;
     }
+  } else
 
-  } else {
-
-    SDL_Log("SDL Window creation failed: %s", SDL_GetError());
+  {
+    std::cout << "SDL Init failed.\n";
     return false;
   }
+
+  game_running = true;
+
+  return true;
 }
 
-void render() {
+void Game::render() {
 
-  SDL_SetRenderDrawColor(g_pRenderer, 0, 0, 0, 255);
+  SDL_RenderClear(m_Renderer);
 
-  SDL_RenderClear(g_pRenderer);
-
-  SDL_RenderPresent(g_pRenderer);
-
-  SDL_Delay(15);
-}
-
-int main(int argc, char *argv[]) {
-
-  init();
-
-  while (is_game_running) {
-
-    handle_events();
-    update();
-    render();
-  }
-
-  clean();
-
-  if (init("SDL Game Development", SDL_WINDOWPOS_CENTERED,
-           SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN)) {
-
-    is_game_running = true;
-  }
-
-  else {
-
-    return 1;
-  }
-
-  while (is_game_running) {
-
-    render();
-  }
-
-  SDL_Quit();
+  SDL_Draw
 }
