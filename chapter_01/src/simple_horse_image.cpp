@@ -1,10 +1,7 @@
 #include "Game.h"
-#include <SDL_image.h>
 #include <iostream>
 
-Game::Game()
-    : game_running(false), m_Window(nullptr), m_Renderer(nullptr),
-      m_Texture(nullptr) {}
+Game::Game() : game_running(false), m_Window(nullptr), m_Renderer(nullptr) {}
 
 Game::~Game() = default;
 
@@ -46,29 +43,20 @@ bool Game::init(const char *title, int x_pos, int y_pox, int width, int height,
     return false;
   }
 
-  const int image_flags = IMG_INIT_PNG;
-  if ((IMG_Init(image_flags) & image_flags) != image_flags) {
-    std::cout << "SDL_image initialization failed: " << IMG_GetError() << "\n";
-    clean();
-    return false;
-  }
+  SDL_Surface *p_tmp_surface = SDL_LoadBMP("../assets/images/rider.bmp");
 
-  m_Texture = IMG_LoadTexture(m_Renderer, "../assets/images/animate-alpha.png");
-  if (m_Texture == nullptr) {
-    std::cout << "Image loading failed: " << IMG_GetError() << "\n";
-    clean();
-    return false;
-  }
+  m_Texture = SDL_CreateTextureFromSurface(m_Renderer, p_tmp_surface);
+
+  SDL_FreeSurface(p_tmp_surface);
 
   SDL_QueryTexture(m_Texture, NULL, NULL, &m_source_rectangle.w,
                    &m_source_rectangle.h);
 
   m_destination_rectangle.x = m_source_rectangle.x = 0;
   m_destination_rectangle.y = m_source_rectangle.y = 0;
-  m_source_rectangle.w = 128;
-  m_source_rectangle.h = 82;
   m_destination_rectangle.w = m_source_rectangle.w;
   m_destination_rectangle.h = m_source_rectangle.h;
+
   game_running = true;
 
   return true;
@@ -77,10 +65,8 @@ bool Game::init(const char *title, int x_pos, int y_pox, int width, int height,
 void Game::render() {
 
   SDL_RenderClear(m_Renderer);
-  // SDL_RenderCopy(m_Renderer, m_Texture, &m_source_rectangle,
-  //               &m_destination_rectangle);
-  SDL_RenderCopyEx(m_Renderer, m_Texture, &m_source_rectangle,
-                   &m_destination_rectangle, 0, 0, SDL_FLIP_HORIZONTAL);
+  SDL_RenderCopy(m_Renderer, m_Texture, &m_source_rectangle,
+                 &m_destination_rectangle);
   SDL_RenderPresent(m_Renderer);
 }
 
@@ -88,21 +74,16 @@ void Game::clean() {
 
   std::cout << "Clearing game.\n";
 
-  SDL_DestroyTexture(m_Texture);
   SDL_DestroyRenderer(m_Renderer);
   SDL_DestroyWindow(m_Window);
-  m_Texture = nullptr;
   m_Renderer = nullptr;
   m_Window = nullptr;
   game_running = false;
-  IMG_Quit();
   SDL_Quit();
 }
 
 void Game::update() {
   // Game state updates will go here.
-
-  m_source_rectangle.x = 128 * int(((SDL_GetTicks() / 100) % 6));
 }
 
 bool Game::is_game_running() const { return game_running; }

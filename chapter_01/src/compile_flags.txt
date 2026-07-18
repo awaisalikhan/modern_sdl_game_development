@@ -1,3 +1,5 @@
 -std=c++17
 -Iinclude
 -I../../External/SDL/include
+-I../../External/SDL/include/SDL
+-I../../External/SDL_image/include/SDL2
