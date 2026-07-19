@@ -1,0 +1,126 @@
+#include "Game.h"
+#include <SDL_image.h>
+#include <iostream>
+
+Game::Game()
+    : game_running(false), m_Window(nullptr), m_Renderer(nullptr),
+      m_Texture(nullptr) {}
+
+Game::~Game() = default;
+
+bool Game::init(const char *title, int x_pos, int y_pox, int width, int height,
+                bool fullscreen) {
+
+  const Uint32 flags = fullscreen ? SDL_WINDOW_FULLSCREEN : 0;
+
+  if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
+
+    std::cout << "SDL init success.\n";
+
+    m_Window = SDL_CreateWindow(title, x_pos, y_pox, width, height, flags);
+
+    if (m_Window != 0) {
+
+      std::cout << "Window creation success.\n";
+      m_Renderer = SDL_CreateRenderer(m_Window, -1, 0);
+
+      if (m_Renderer != 0) {
+
+        std::cout << "Renderer creation success.\n";
+        SDL_SetRenderDrawColor(m_Renderer, 255, 255, 255, 255);
+      }
+
+      else {
+
+        std::cout << "Render creation failed.\n";
+        return false;
+      }
+    } else {
+      std::cout << "Window creation failed.\n";
+      return false;
+    }
+  } else
+
+  {
+    std::cout << "SDL Init failed.\n";
+    return false;
+  }
+
+  const int image_flags = IMG_INIT_PNG;
+  if ((IMG_Init(image_flags) & image_flags) != image_flags) {
+    std::cout << "SDL_image initialization failed: " << IMG_GetError() << "\n";
+    clean();
+    return false;
+  }
+
+  m_Texture = IMG_LoadTexture(m_Renderer, "../assets/images/animate-alpha.png");
+  if (m_Texture == nullptr) {
+    std::cout << "Image loading failed: " << IMG_GetError() << "\n";
+    clean();
+    return false;
+  }
+
+  SDL_QueryTexture(m_Texture, NULL, NULL, &m_source_rectangle.w,
+                   &m_source_rectangle.h);
+
+  m_destination_rectangle.x = m_source_rectangle.x = 0;
+  m_destination_rectangle.y = m_source_rectangle.y = 0;
+  m_source_rectangle.w = 128;
+  m_source_rectangle.h = 82;
+  m_destination_rectangle.w = m_source_rectangle.w;
+  m_destination_rectangle.h = m_source_rectangle.h;
+  game_running = true;
+
+  return true;
+}
+
+void Game::render() {
+
+  SDL_RenderClear(m_Renderer);
+  // SDL_RenderCopy(m_Renderer, m_Texture, &m_source_rectangle,
+  //               &m_destination_rectangle);
+  SDL_RenderCopyEx(m_Renderer, m_Texture, &m_source_rectangle,
+                   &m_destination_rectangle, 0, 0, SDL_FLIP_HORIZONTAL);
+  SDL_RenderPresent(m_Renderer);
+}
+
+void Game::clean() {
+
+  std::cout << "Clearing game.\n";
+
+  SDL_DestroyTexture(m_Texture);
+  SDL_DestroyRenderer(m_Renderer);
+  SDL_DestroyWindow(m_Window);
+  m_Texture = nullptr;
+  m_Renderer = nullptr;
+  m_Window = nullptr;
+  game_running = false;
+  IMG_Quit();
+  SDL_Quit();
+}
+
+void Game::update() {
+  // Game state updates will go here.
+
+  m_source_rectangle.x = 128 * int(((SDL_GetTicks() / 100) % 6));
+}
+
+bool Game::is_game_running() const { return game_running; }
+
+void Game::handle_events() {
+
+  SDL_Event event;
+
+  if (SDL_PollEvent(&event)) {
+
+    switch (event.type) {
+
+    case SDL_QUIT:
+      game_running = false;
+      break;
+
+    default:
+      break;
+    }
+  }
+}
